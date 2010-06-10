@@ -37,7 +37,7 @@ module Guitr
       
       @operation = :status;
       args.each do |arg|
-        @operation = arg.gsub('--', '') if @operational_args.include?(arg)
+        return @operation = arg.gsub('--', '') if @operational_args.include?(arg)
       end
       
       start_directory = './'

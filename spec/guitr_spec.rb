@@ -52,4 +52,10 @@ describe Guitr::GuitrRunner do
     @guitr_runner.log.level.should eql(Logger::DEBUG)
   end
   
+  it "should use first operation argument to operate with" do
+    args = ['--trace', '--status', '--pull', File.expand_path(File.dirname(__FILE__)+'/../')]
+    @guitr_runner.validate args
+    @guitr_runner.operation.should eql(:status.to_s)
+  end
+  
 end
