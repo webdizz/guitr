@@ -1,6 +1,6 @@
 = guitr
 
-* http://github.com/webdizz/guitr
+* http://webdizz.name/posts/guitr
 
 == DESCRIPTION:
 

@@ -14,7 +14,11 @@ Hoe.plugin :git
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.spec 'guitr' do
   self.developer 'webdizz', 'webdizz@gmail.com'
-  self.post_install_message = '$ guitr --status|--pull [path_to_repo]  '
+  self.post_install_message = '
+  Usage:
+    $ guitr --status|--pull [path_to_repo]  
+  For details go to http://webdizz.name/posts/guitr
+  '
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [
     ['git','>= 1.2.5'],
