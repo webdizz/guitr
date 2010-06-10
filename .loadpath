@@ -3,4 +3,5 @@
 	<pathentry path="" type="src"/>
 	<pathentry path="org.rubypeople.rdt.launching.RUBY_CONTAINER" type="con"/>
 	<pathentry path="/usr/lib/ruby/gems/1.8/gems/git-1.2.5/lib" type="lib"/>
+	<pathentry path="/usr/lib/ruby/gems/1.8/gems/newgem-1.5.3" type="lib"/>
 </loadpath>
