@@ -7,15 +7,16 @@ module Guitr
   
   class GuitrRunner
     
-    attr_accessor :repo_paths, :operation
+    attr_accessor :repo_paths, :operation, :log
     
     def initialize 
       @operational_args = ['--status', '--pull']
-      @acceptable_args = ['--verbose'] << @operational_args
+      @acceptable_args = [:verbose, :trace] << @operational_args
       @acceptable_args = @acceptable_args.flatten
       @repo_paths = []
       @git_dir = '.git'
       @usage = '$ guitr --status|--pull path_to_git_repo(s) '
+      @options = {}
     end
     
     def run(args)
@@ -33,7 +34,7 @@ module Guitr
     def validate(args)
       @operation = :status;
       args.each do |arg|
-        @operation = arg.gsub('--', '') if @acceptable_args.include?(arg)
+        @operation = arg.gsub('--', '') if @operational_args.include?(arg)
       end
       
       start_directory = './'
@@ -60,12 +61,28 @@ module Guitr
         exit(0)
       end
       
+      init_logger(args)
+      
     end
     
+    def init_logger args
+      args.each do |arg|
+        arg = arg.gsub('--', '')
+        create_logger(Logger::INFO) if arg.to_sym == :verbose
+        create_logger(Logger::DEBUG) if arg.to_sym == :trace
+      end
+    end
+    private :init_logger
+    
+    def create_logger level
+      @log = Logger.new STDOUT
+      @log.level = level
+      @options[:log] = @log
+    end
+    private :create_logger
+    
     def git_status repo
-      log = Logger.new(STDOUT)
-      log.level = Logger::WARN
-      g = Git.open(repo, :log => log)
+      g = Git.open(repo, @options)
       puts 
       puts "Status for #{repo}"
       puts '======================<<<<<<<<<<'
@@ -83,7 +100,7 @@ module Guitr
     def git_pull repo
       puts
       puts "Going to pull #{repo}"
-      g = Git.open(repo, :log => Logger.new(STDOUT))
+      g = Git.open(repo, @options)
       g.pull
     end
     private :git_status

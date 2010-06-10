@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
+require 'logger'
 
 describe Guitr::GuitrRunner do
   
@@ -31,6 +32,24 @@ describe Guitr::GuitrRunner do
   it "should fail if there is are no repositories within specified directory" do
     args = [File.expand_path(File.dirname(__FILE__))];
     lambda { @guitr_runner.validate(args)}.should raise_exception SystemExit
+  end
+  
+  it "should operate verbosely if --verbose was specified" do
+    args = ['--verbose', File.expand_path(File.dirname(__FILE__)+'/../')]
+    @guitr_runner.validate args
+    @guitr_runner.log.should_not be_nil
+  end
+  
+  it "should use INFO logger if --verbose was specified" do
+    args = ['--verbose', File.expand_path(File.dirname(__FILE__)+'/../')]
+    @guitr_runner.validate args
+    @guitr_runner.log.level.should eql(Logger::INFO)
+  end
+  
+  it "should operate in debug mode if --trace was specified" do
+    args = ['--trace', File.expand_path(File.dirname(__FILE__)+'/../')]
+    @guitr_runner.validate args
+    @guitr_runner.log.level.should eql(Logger::DEBUG)
   end
   
 end
