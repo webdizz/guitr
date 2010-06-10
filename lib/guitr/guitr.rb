@@ -55,7 +55,7 @@ module Guitr
       
       Find.find(start_directory) do |path|
         if path.include?(@git_dir) && !path.include?("#{@git_dir}/") && File.exist?(path) && File.directory?(path)
-          @repo_paths << path.gsub(@git_dir, '')
+          @repo_paths << File.expand_path(path.gsub(@git_dir, ''))
         end
       end
       
