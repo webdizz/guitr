@@ -2,3 +2,11 @@
 
 * 1 major enhancement:
   * Initial release
+
+=== 0.0.2 2010-06-11
+
+* 2 major enhancements:
+  * Own git status command implementation was added
+  * Logging now can be specified with --verbose or --trace
+  * Specs for most operations were added
+  
