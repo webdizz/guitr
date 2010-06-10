@@ -33,6 +33,8 @@ module Guitr
     end
     
     def validate(args)
+      init_logger(args)
+      
       @operation = :status;
       args.each do |arg|
         @operation = arg.gsub('--', '') if @operational_args.include?(arg)
@@ -41,7 +43,7 @@ module Guitr
       start_directory = './'
       last = args.last
       if last.nil? || last.include?('--')
-        puts 'Current directory will be used to start looking for git working copies.'
+        @log.info 'Current directory will be used to start looking for git working copies.' if @log
       else
         start_directory = args.last	
       end
@@ -61,8 +63,6 @@ module Guitr
         puts "There are no repositories within '#{start_directory}' directory."
         exit(0)
       end
-      
-      init_logger(args)
       
     end
     
@@ -88,7 +88,7 @@ module Guitr
       g = Git.open(repo, @options)
       g.pull
     end
-    private :git_status
+    private :git_pull
     
   end
 end
