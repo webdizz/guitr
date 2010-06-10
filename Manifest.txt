@@ -6,10 +6,12 @@ Rakefile
 bin/guitr
 lib/guitr.rb
 lib/guitr/exceptions.rb
+lib/guitr/git.rb
 lib/guitr/guitr.rb
 script/console
 script/destroy
 script/generate
+spec/git_spec.rb
 spec/guitr_spec.rb
 spec/spec.opts
 spec/spec_helper.rb

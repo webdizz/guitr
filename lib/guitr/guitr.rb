@@ -2,12 +2,13 @@ require 'rubygems'
 require 'git'
 require 'find'
 require 'logger'
+require 'guitr/git'
 
 module Guitr
   
   class GuitrRunner
     
-    attr_accessor :repo_paths, :operation, :log
+    attr_reader :repo_paths, :operation, :log
     
     def initialize 
       @operational_args = ['--status', '--pull']
@@ -26,7 +27,7 @@ module Guitr
           when :pull
           git_pull(repo)
           when :status
-          git_status(repo)
+          GuitrGit::GitStatus.new.run(repo, @options)
         end
       end
     end
@@ -80,22 +81,6 @@ module Guitr
       @options[:log] = @log
     end
     private :create_logger
-    
-    def git_status repo
-      g = Git.open(repo, @options)
-      puts 
-      puts "Status for #{repo}"
-      puts '======================<<<<<<<<<<'
-      puts 'You have next untracked/modified/deleted/added files:' if !g.status.changed
-      g.status.each{|file|
-        puts "U  #{file.path}" if file.untracked
-        puts "M  #{file.path}" if file.type == 'M'
-        puts "D  #{file.path}" if file.type == 'D'
-        puts "A  #{file.path}" if file.type == 'A'
-      }
-      puts '======================>>>>>>>>>>>'
-    end
-    private :git_status
     
     def git_pull repo
       puts
