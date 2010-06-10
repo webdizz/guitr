@@ -7,8 +7,12 @@ module Guitr
   
   class GuitrRunner
     
+    attr_accessor :repo_paths, :operation
+    
     def initialize 
-      @acceptable_args = ['--status', '--pull'] 
+      @operational_args = ['--status', '--pull']
+      @acceptable_args = ['--verbose'] << @operational_args
+      @acceptable_args = @acceptable_args.flatten
       @repo_paths = []
       @git_dir = '.git'
       @usage = '$ guitr --status|--pull path_to_git_repo(s) '
@@ -32,18 +36,13 @@ module Guitr
         @operation = arg.gsub('--', '') if @acceptable_args.include?(arg)
       end
       
-      if @operation.to_s.empty?
-        puts 'You need to define one of acceptable operations --status or --pull'
-        exit(0)
-      end
-      
-      start_directory = './'	
-      if args.last.nil? || args.last.include?('--')
+      start_directory = './'
+      last = args.last
+      if last.nil? || last.include?('--')
         puts 'Current directory will be used to start looking for git working copies.'
       else
         start_directory = args.last	
       end
-      
       
       if !File.exist? start_directory
         puts "Directory '#{start_directory}' does not exist."
@@ -54,6 +53,11 @@ module Guitr
         if path.include?(@git_dir) && !path.include?("#{@git_dir}/") && File.exist?(path) && File.directory?(path)
           @repo_paths << path.gsub(@git_dir, '')
         end
+      end
+      
+      if @repo_paths.empty?
+        puts "There are no repositories within '#{start_directory}' directory."
+        exit(0)
       end
       
     end
