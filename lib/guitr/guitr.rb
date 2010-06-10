@@ -2,7 +2,6 @@ require 'rubygems'
 require 'git'
 require 'find'
 require 'logger'
-require 'guitr/exceptions'
 
 module Guitr
   
@@ -33,13 +32,13 @@ module Guitr
         @operation = arg.gsub('--', '') if @acceptable_args.include?(arg)
       end
       
-      if @operation.empty?
+      if @operation.to_s.empty?
         puts 'You need to define one of acceptable operations --status or --pull'
         exit(0)
       end
       
       start_directory = './'	
-      if args.last.include?('--')
+      if args.last.nil? || args.last.include?('--')
         puts 'Current directory will be used to start looking for git working copies.'
       else
         start_directory = args.last	

@@ -5,6 +5,7 @@ README.rdoc
 Rakefile
 bin/guitr
 lib/guitr.rb
+lib/guitr/exceptions.rb
 lib/guitr/guitr.rb
 script/console
 script/destroy
