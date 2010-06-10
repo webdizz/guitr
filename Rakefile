@@ -1,20 +1,25 @@
 require 'rubygems'
 gem 'hoe', '>= 2.1.0'
+gem 'git', '>=1.2.5'
+
 require 'hoe'
+require 'git'
 require 'fileutils'
 require './lib/guitr'
 
 Hoe.plugin :newgem
-# Hoe.plugin :website
-# Hoe.plugin :cucumberfeatures
+Hoe.plugin :git
 
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.spec 'guitr' do
-  self.developer 'FIXME full name', 'FIXME email'
-  self.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
+  self.developer 'webdizz', 'webdizz@gmail.com'
+  self.post_install_message = '$ guitr --status|--pull [path_to_repo]  '
   self.rubyforge_name       = self.name # TODO this is default value
-  # self.extra_deps         = [['activesupport','>= 2.0.2']]
+  self.extra_deps         = [
+    ['git','>= 1.2.5'],
+    ['hoe', ">= #{Hoe::VERSION}"]
+  ]
 
 end
 

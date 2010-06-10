@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'rubygems' unless ENV['NO_RUBYGEMS']
+require 'guitr'
+
+if %w(-v --version).include? ARGV.first
+  puts "#{File.basename($0)} #{Guitr::VERSION}"
+  exit(0)
+end
+
+args = ARGV.clone
+
+begin
+  Guitr::GuitrRunner.new.run args
+rescue Guitr::SystemExitException => e
+  exit e.exit_code
+end

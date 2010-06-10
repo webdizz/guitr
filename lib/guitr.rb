@@ -4,3 +4,6 @@ $:.unshift(File.dirname(__FILE__)) unless
 module Guitr
   VERSION = '0.0.1'
 end
+
+require 'guitr/guitr'
+require 'guitr/exceptions'

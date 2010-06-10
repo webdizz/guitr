@@ -1,9 +1,12 @@
 History.txt
+MIT-LICENSE
 Manifest.txt
 PostInstall.txt
 README.rdoc
 Rakefile
+bin/guitr
 lib/guitr.rb
+lib/guitr/guitr.rb
 script/console
 script/destroy
 script/generate

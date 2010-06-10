@@ -1,69 +1,89 @@
-#!/usr/bin/env ruby
- 
 require 'rubygems'
 require 'git'
 require 'find'
 require 'logger'
+require 'guitr/exceptions'
 
 module Guitr
   
-  def status repo
-    log = Logger.new(STDOUT)
-    log.level = Logger::WARN
-    g = Git.open(repo, :log => log)
-    puts 
-    puts "Status for #{repo}"
-    puts '======================<<<<<<<<<<'
-    puts 'You have next untracked/modified/deleted/added files:' if !g.status.changed
-    g.status.each{|file|
-      puts "U  #{file.path}" if file.untracked
-      puts "M  #{file.path}" if file.type == 'M'
-      puts "D  #{file.path}" if file.type == 'D'
-      puts "A  #{file.path}" if file.type == 'A'
-    }
-    puts '======================>>>>>>>>>>>'
-  end
-  
-  def pull repo
-    puts
-    puts "Going to pull #{repo}"
-    g = Git.open(repo, :log => Logger.new(STDOUT))
-    g.pull
-  end
-  
-end
-
-include Guitr
-if __FILE__ == $0
-  
-  working_dir = ARGV[0]
-  
-  if !working_dir
-    puts "You need to define path to folder with projects or a project as an argument."
-    puts
-    puts '$ ruby guitr path_to_project'
-    puts
-    Thread.current.exit
-  end
-  
-  if !File.exist? working_dir
-    puts "Directory '#{working_dir}' does not exist."
-    Thread.current.exit
-  end
-  
-  repos = []
-  
-  Find.find(working_dir) do |path|
-    if path.include?('.git') && !path.include?('.git/') && File.exist?(path) && File.directory?(path)
-      repos << path.gsub('.git', '')
+  class GuitrRunner
+    
+    def initialize 
+      @acceptable_args = ['--status', '--pull'] 
+      @repo_paths = []
+      @git_dir = '.git'
+      @usage = '$ guitr --status|--pull path_to_git_repo(s) '
     end
     
+    def run(args)
+      validate args
+      @repo_paths.flatten.uniq.each do |repo|
+        case @operation.to_sym
+          when :pull
+          git_pull(repo)
+          when :status
+          git_status(repo)
+        end
+      end
+    end
+    
+    def validate(args)
+      @operation = :status;
+      args.each do |arg|
+        @operation = arg.gsub('--', '') if @acceptable_args.include?(arg)
+      end
+      
+      if @operation.empty?
+        puts 'You need to define one of acceptable operations --status or --pull'
+        exit(0)
+      end
+      
+      start_directory = './'	
+      if args.last.include?('--')
+        puts 'Current directory will be used to start looking for git working copies.'
+      else
+        start_directory = args.last	
+      end
+      
+      
+      if !File.exist? start_directory
+        puts "Directory '#{start_directory}' does not exist."
+        exit(0)
+      end
+      
+      Find.find(start_directory) do |path|
+        if path.include?(@git_dir) && !path.include?("#{@git_dir}/") && File.exist?(path) && File.directory?(path)
+          @repo_paths << path.gsub(@git_dir, '')
+        end
+      end
+      
+    end
+    
+    def git_status repo
+      log = Logger.new(STDOUT)
+      log.level = Logger::WARN
+      g = Git.open(repo, :log => log)
+      puts 
+      puts "Status for #{repo}"
+      puts '======================<<<<<<<<<<'
+      puts 'You have next untracked/modified/deleted/added files:' if !g.status.changed
+      g.status.each{|file|
+        puts "U  #{file.path}" if file.untracked
+        puts "M  #{file.path}" if file.type == 'M'
+        puts "D  #{file.path}" if file.type == 'D'
+        puts "A  #{file.path}" if file.type == 'A'
+      }
+      puts '======================>>>>>>>>>>>'
+    end
+    private :git_status
+    
+    def git_pull repo
+      puts
+      puts "Going to pull #{repo}"
+      g = Git.open(repo, :log => Logger.new(STDOUT))
+      g.pull
+    end
+    private :git_status
+    
   end
-  
-  repos.flatten.uniq.each do |repo|
-    status(repo) if !ARGV[1] || ARGV[1]=='status'
-    pull(repo) if ARGV[1]=='pull'
-  end
-  
 end
-
