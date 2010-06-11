@@ -1,5 +1,4 @@
 require 'git'
-require 'logger'
 
 module Guitr
   module GuitrGit
@@ -26,10 +25,13 @@ module Guitr
       attr_reader :git
       
       def run(repo, options={})
+        puts 'Unpushed:'
         @git = Git.open(repo, options)
         git_lib = @git.lib
         current_branch = git_lib.branch_current
-        git_lib.unpushed(current_branch, "#{git_lib.remotes}/#{current_branch}")
+        res = git_lib.unpushed(current_branch, "#{git_lib.remotes}/#{current_branch}")
+        puts res
+        res
       end
       
     end
@@ -39,17 +41,15 @@ end
 
 module Git
   
-    class Lib
-      
-      def status
-        command('status', ['--porcelain'])
-      end
-      
-      def unpushed branch, remote_branch
-        @logger = Logger.new(STDOUT)
-        @logger.level = Logger::INFO
-        command('diff', ['--numstat', '--shortstat', branch, remote_branch])
-      end
-      
+  class Lib
+    
+    def status
+      command('status', ['--porcelain'])
     end
+    
+    def unpushed branch, remote_branch
+      command('diff', ['--numstat', '--shortstat', branch, remote_branch])
+    end
+    
+  end
 end

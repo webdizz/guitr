@@ -53,9 +53,23 @@ describe Guitr::GuitrRunner do
   end
   
   it "should use first operation argument to operate with" do
-    args = ['--trace', '--status', '--pull', File.expand_path(File.dirname(__FILE__)+'/../')]
+    args = ['--trace', '--pull', '--status', File.expand_path(File.dirname(__FILE__)+'/../')]
     @guitr_runner.validate args
-    @guitr_runner.operation.should eql(:status.to_s)
+    @guitr_runner.operation.should eql(:pull.to_s)
+  end
+  
+  it "should have unpushed operation" do
+    args = ['--unpushed'];
+    @guitr_runner.validate args
+    @guitr_runner.operation.should  eql(:unpushed.to_s)
+  end
+  
+  it "should have empty or some satistic of unpushed changes" do
+    args = ['--unpushed', File.expand_path(File.dirname(__FILE__)+'/../')];
+    res = @guitr_runner.run args
+    res.should be_empty if res.empty?
+    res.should include('insertions') if !res.empty?
+    res.should_not include('nothing to do')
   end
   
 end

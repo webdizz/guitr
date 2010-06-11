@@ -8,10 +8,12 @@ module Guitr
   
   class GuitrRunner
     
+    include GuitrGit
+    
     attr_reader :repo_paths, :operation, :log
     
     def initialize 
-      @operational_args = ['--status', '--pull']
+      @operational_args = ['--status', '--pull', '--unpushed']
       @acceptable_args = [:verbose, :trace] << @operational_args
       @acceptable_args = @acceptable_args.flatten
       @repo_paths = []
@@ -22,23 +24,27 @@ module Guitr
     
     def run(args)
       validate args
+      res = ''
       @repo_paths.flatten.uniq.each do |repo|
         case @operation.to_sym
           when :pull
-          git_pull(repo)
+          res = git_pull(repo)
           when :status
-          GuitrGit::GitStatus.new.run(repo, @options)
+          res = GitStatus.new.run(repo, @options)
+          when :unpushed          
+          res = GitUnpushed.new.run(repo, @options)
         end
       end
+      res
     end
     
     def validate(args)
       init_logger(args)
       
-      @operation = :status;
       args.each do |arg|
-        return @operation = arg.gsub('--', '') if @operational_args.include?(arg)
+        @operation = arg.gsub('--', '') if @operational_args.include?(arg) && @operation.nil?
       end
+      @operation = :status if @operation.nil?
       
       start_directory = './'
       last = args.last
