@@ -1,10 +1,12 @@
 = guitr
 
 * http://webdizz.name/posts/guitr
+* http://github.com/webdizz/guitr
 
 == DESCRIPTION:
 
-The gem to ease of git pull/status actions on multi-modules projects with git repository per one. 
+The gem to ease of some git actions on multi-modules project with separate repository per module.
+Can be used to check status or existence of commits within modules not pushed yet, also to pull all repositories at once.
 
 == FEATURES/PROBLEMS:
 
@@ -18,6 +20,7 @@ Lets ensure that everything is under git control that should be.
   Options:
   --status		# default command to invoke, echos result of the 'git status'
   --pull		# performs 'git pull' against all found repositories
+  --unpushed    # checks whether there are commits need to be pushed
   --verbose		# echos INFO level logs
   --trace		# echos DEBUG level logs
 

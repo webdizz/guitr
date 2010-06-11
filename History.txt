@@ -9,4 +9,8 @@
   * Own git status command implementation was added
   * Logging now can be specified with --verbose or --trace
   * Specs for most operations were added
-  
+
+=== 0.0.3 2010-06-12
+
+* 1 major enhancements:
+  * --unpushed  argument was added to check whether there are commits need to be pushed  

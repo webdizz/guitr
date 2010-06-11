@@ -25,11 +25,17 @@ module Guitr
       attr_reader :git
       
       def run(repo, options={})
-        puts 'Unpushed:'
         @git = Git.open(repo, options)
         git_lib = @git.lib
         current_branch = git_lib.branch_current
-        res = git_lib.unpushed(current_branch, "#{git_lib.remotes}/#{current_branch}")
+        remote = git_lib.remotes
+        if remote.empty?
+          puts "There are no remote for '#{repo}' repository."
+          return ''
+        end
+        res = git_lib.unpushed(current_branch, "#{remote}/#{current_branch}")
+        puts 'Unpushed:' if !res.empty?
+        puts "There is no unpushed commits for #{repo} repository." if res.empty?
         puts res
         res
       end

@@ -21,6 +21,7 @@ $hoe = Hoe.spec 'guitr' do
   Options:
   --status    # default command to invoke, echos result of the 'git status'
   --pull      # performs 'git pull' against all found repositories
+  --unpushed  # checks whether there are commits need to be pushed
   --verbose   # echos INFO level logs
   --trace     # echos DEBUG level logs
     
