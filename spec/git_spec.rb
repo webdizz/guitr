@@ -46,4 +46,25 @@ describe Guitr::GuitrGit do
     
   end
   
+  describe GitUnpushed do
+    
+    before do
+      @right_repo = File.expand_path(File.dirname(__FILE__)+'/../')
+      @action = GitUnpushed.new
+      @test_file_name = 'some_file_2'
+    end
+    
+    it "should have a git instance if repo path is correct" do
+      @action.run @right_repo, {}
+      @action.git.should_not be_nil
+    end
+    
+    it "should display unpushed items or display nothing" do
+      res = @action.run @right_repo, {}
+      res.should be_empty if res.empty?
+      res.should include('insertions') if !res.empty?
+    end
+    
+  end
+  
 end
