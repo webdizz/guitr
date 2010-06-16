@@ -31,13 +31,18 @@ module Guitr
         current_branch = git_lib.branch_current
         remote = git_lib.remotes
         if remote.empty?
-          puts "There are no remote for '#{repo}' repository."
+          puts "There is no remote for '#{repo}' repository."
           return ''
         end
         res = ''
         begin
           res = git_lib.unpushed(current_branch, "#{remote}/#{current_branch}")
-          puts 'Unpushed:' if !res.empty?
+          if !res.empty?
+            puts 
+            puts 'Unpushed commits: ' 
+            puts res
+            puts 
+          end
           puts "There is no unpushed commits for #{repo} repository." if res.empty?
         rescue Git::GitExecuteError => e
           puts "Unable to check unpushed commits: #{e.message}"
@@ -54,14 +59,17 @@ module Guitr
       
       def run(repo, options = {})
         @git = Git.open(repo, options)
-        puts "Going to pull #{repo}"
         begin
-          @git.lib.pull
+          puts
+          puts "Going to pull #{repo}"
+          res = @git.lib.pull
+          puts res
+          res
         rescue Git::GitExecuteError => e
           puts "Unable to pull: #{e.message}"
         end
       end
-     
+      
     end
     
   end

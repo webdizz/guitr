@@ -28,7 +28,7 @@ module Guitr
       @repo_paths.flatten.uniq.each do |repo|
         case @operation.to_sym
           when :pull
-          GitPull.new.run(repo, @options)
+          res = GitPull.new.run(repo, @options)
           when :status
           res = GitStatus.new.run(repo, @options)
           when :unpushed          
