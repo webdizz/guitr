@@ -1,4 +1,5 @@
 require 'git'
+require 'timeout'
 
 module Guitr
   module GuitrGit
@@ -33,13 +34,34 @@ module Guitr
           puts "There are no remote for '#{repo}' repository."
           return ''
         end
-        res = git_lib.unpushed(current_branch, "#{remote}/#{current_branch}")
-        puts 'Unpushed:' if !res.empty?
-        puts "There is no unpushed commits for #{repo} repository." if res.empty?
-        puts res
+        res = ''
+        begin
+          res = git_lib.unpushed(current_branch, "#{remote}/#{current_branch}")
+          puts 'Unpushed:' if !res.empty?
+          puts "There is no unpushed commits for #{repo} repository." if res.empty?
+        rescue Git::GitExecuteError => e
+          puts "Unable to check unpushed commits: #{e.message}"
+        end
+        
         res
       end
       
+    end
+    
+    class GitPull
+      
+      attr_reader :git
+      
+      def run(repo, options = {})
+        @git = Git.open(repo, options)
+        puts "Going to pull #{repo}"
+        begin
+          @git.lib.pull
+        rescue Git::GitExecuteError => e
+          puts "Unable to pull: #{e.message}"
+        end
+      end
+     
     end
     
   end
@@ -55,6 +77,10 @@ module Git
     
     def unpushed branch, remote_branch
       command('diff', ['--numstat', '--shortstat', branch, remote_branch])
+    end
+    
+    def pull
+      command('pull')
     end
     
   end

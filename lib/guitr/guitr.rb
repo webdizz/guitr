@@ -28,7 +28,7 @@ module Guitr
       @repo_paths.flatten.uniq.each do |repo|
         case @operation.to_sym
           when :pull
-          res = git_pull(repo)
+          GitPull.new.run(repo, @options)
           when :status
           res = GitStatus.new.run(repo, @options)
           when :unpushed          
@@ -56,7 +56,7 @@ module Guitr
       
       if !File.exist? start_directory
         puts "Directory '#{start_directory}' does not exist."
-        exit(0)
+        exit()
       end
       
       Find.find(start_directory) do |path|
@@ -67,7 +67,7 @@ module Guitr
       
       if @repo_paths.empty?
         puts "There are no repositories within '#{start_directory}' directory."
-        exit(0)
+        exit()
       end
       
     end
@@ -87,14 +87,6 @@ module Guitr
       @options[:log] = @log
     end
     private :create_logger
-    
-    def git_pull repo
-      puts
-      puts "Going to pull #{repo}"
-      g = Git.open(repo, @options)
-      g.pull
-    end
-    private :git_pull
     
   end
 end
