@@ -12,5 +12,13 @@
 
 === 0.0.3 2010-06-12
 
-* 1 major enhancements:
+* 1 major enhancement:
   * --unpushed  argument was added to check whether there are commits need to be pushed  
+
+=== 0.0.4 2010-06-17
+
+* 2 major enhancements:
+  * --pull operation was refactored
+  * bug with absence of the remote branch or empty repo was fixed
+  Other
+  * additional small improvements  
