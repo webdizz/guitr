@@ -22,3 +22,8 @@
   * bug with absence of the remote branch or empty repo was fixed
   Other
   * additional small improvements  
+
+=== 0.0.5 2010-06-24
+
+* 1 major enhancements:
+  * --unpushed operation was enhanced to be informative   

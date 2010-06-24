@@ -4,4 +4,7 @@
 	<pathentry path="org.rubypeople.rdt.launching.RUBY_CONTAINER" type="con"/>
 	<pathentry path="/usr/lib/ruby/gems/1.8/gems/git-1.2.5/lib" type="lib"/>
 	<pathentry path="/usr/lib/ruby/gems/1.8/gems/newgem-1.5.3" type="lib"/>
+	<pathentry path="GEM_LIB/rspec-1.3.0/lib" type="var"/>
+	<pathentry path="GEM_LIB/git-1.2.5/lib" type="var"/>
+	<pathentry path="GEM_LIB/hoe-2.6.0/lib" type="var"/>
 </loadpath>
