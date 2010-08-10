@@ -115,9 +115,28 @@ describe Guitr::GuitrGit do
       @action.git.should_not be_nil
     end
     
-    it "should display unpushed items or display nothing" do
+    it "should display pulling result" do
+      module Git
+        class Lib
+          def pull
+            'Updating'
+          end
+        end
+      end
       res = @action.run $RIGHT_REPO, {}
       res.should include('Updating')
+    end
+    
+    it "should be silent if code base is up-to-date" do
+      module Git
+        class Lib
+          def pull
+            'up-to-date'
+          end
+        end
+      end
+      res = @action.run $RIGHT_REPO, {}
+      res.should be_empty
     end
     
     it "should report an error without interruption if error was occured on pull action" do
@@ -143,13 +162,3 @@ describe Guitr::GuitrGit do
   
 end
 
-module Git
-  
-  class Lib
-    
-    def pull
-      'Updating'
-    end
-    
-  end
-end

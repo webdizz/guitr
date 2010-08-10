@@ -46,7 +46,6 @@ module Guitr
             puts res
             puts 
           end
-          puts "There is no unpushed commits for #{repo}." if res.empty?
         rescue Git::GitExecuteError => e
           puts "Unable to check unpushed commits '#{repo}' #{e.message}"
         end
@@ -64,8 +63,9 @@ module Guitr
         @git = Git.open(repo, options)
         begin
           puts
-          puts "Going to pull #{repo}"
           res = @git.lib.pull
+          res = "Going to pull #{repo}\n"+res if !res.empty?
+          res = '' if res.include?("up-to-date")
           puts res
           res
         rescue Git::GitExecuteError => e
