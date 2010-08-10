@@ -5,12 +5,22 @@ include Guitr::GuitrGit
 
 describe Guitr::GuitrGit do
   
-  $RIGHT_REPO = File.expand_path(File.dirname(__FILE__)+'/../')
+  $RIGHT_REPO = File.expand_path(File.dirname(__FILE__)+'/../tmp')
+  
+  before(:all) do
+    FileUtils.rm_rf $RIGHT_REPO
+    Dir.mkdir $RIGHT_REPO
+    Git::init($RIGHT_REPO)
+  end
+  
+  after(:all) do
+    FileUtils.rm_rf $RIGHT_REPO
+  end
   
   describe GitStatus do
     
     before do
-      @test_file_name = 'some_file'
+      @test_file_name = $RIGHT_REPO+'/some_file'
       @action = GitStatus.new
     end
     
@@ -23,7 +33,7 @@ describe Guitr::GuitrGit do
       begin
         file = open(@test_file_name, "w")
         res = @action.run $RIGHT_REPO, {}
-        res.should include @test_file_name
+        res.should include File.basename @test_file_name
       ensure
         clean_test_file(file)
       end
@@ -40,19 +50,13 @@ describe Guitr::GuitrGit do
       end
     end
     
-    def clean_test_file file
-      file.close
-      File.delete @test_file_name
-    end
-    private :clean_test_file
-    
   end
   
   describe GitUnpushed do
     
     before do
       @action = GitUnpushed.new
-      @test_file_name = 'some_file_2'
+      @test_file_name = $RIGHT_REPO+'/some_file_2'
     end
     
     it "should have a git instance if repo path is correct" do
@@ -63,11 +67,18 @@ describe Guitr::GuitrGit do
     it "should display unpushed items" do
       module Git
         class Lib
-          def unpushed branch, remote_branch
-            'insertions'
+          def branch_current
+            'master'
+          end
+          def remotes
+            'master'
+          end
+          def unpushed current_branch, remote_branch
+            'insertions some additional statistics'
           end
         end
       end
+      
       res = @action.run $RIGHT_REPO, {}
       res.should include('insertions')
     end
@@ -91,7 +102,7 @@ describe Guitr::GuitrGit do
     
     before do
       @action = GitPull.new
-      @test_file_name = 'some_file_2'
+      @test_file_name = $RIGHT_REPO+'/some_file_2'
     end
     
     it "should have a git instance if repo path is correct" do
@@ -118,6 +129,12 @@ describe Guitr::GuitrGit do
     end
     
   end
+  
+  def clean_test_file file
+    file.close
+    File.delete @test_file_name
+  end
+  private :clean_test_file
   
 end
 
