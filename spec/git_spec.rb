@@ -50,6 +50,11 @@ describe Guitr::GuitrGit do
       end
     end
     
+    it 'should silent for empty status' do
+      res = @action.run $RIGHT_REPO, {}
+      res.should be_empty
+    end
+    
   end
   
   describe GitUnpushed do

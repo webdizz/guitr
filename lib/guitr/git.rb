@@ -11,10 +11,13 @@ module Guitr
       def run(repo, options = {})
         @git = Git.open(repo, options)
         res = @git.lib.status
-        puts 
-        puts "Status for #{repo}"
-        puts res = res.gsub('??', ' U')
-        puts
+        if !res.empty?
+          puts 
+          res = "Status for #{repo}\n"+res
+          res = res.gsub('??', ' U')
+          puts res
+          puts
+        end
         
         res
       end
