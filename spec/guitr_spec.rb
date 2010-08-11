@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'logger'
+require 'optparse'
 
 describe Guitr::GuitrRunner do
   
@@ -72,4 +73,18 @@ describe Guitr::GuitrRunner do
     @guitr_runner.operation.should  eql(:unpushed)
   end
   
+  it 'should run specified command' do
+    ARGV << '--exec'
+    ARGV << 'date'
+    @guitr_runner.run
+    @guitr_runner.operation.should  eql(:exec)
+  end
+  
+  it 'should fail to run specified command' do
+    lambda { 
+      ARGV << '--exec'
+      @guitr_runner.run
+    }.should raise_exception OptionParser::ParseError
+  end
+    
 end

@@ -26,6 +26,7 @@ module Guitr
       @options.operation = :status
       @options.isOperationSet = false;
       @options.log = nil
+      @options.command = nil
       
       OptionParser.new do |opts|
         opts.banner = "Usage: guitr [options] [repository]"
@@ -52,6 +53,12 @@ module Guitr
         # Run status command
         opts.on("-s", "--status", "Run --status command") do |s|
           setOperation :status
+        end
+        
+        # Run exec command
+        opts.on("-e", "--exec COMMAND", "Run COMMAND, for example guitr --exec date will output current date") do |c|
+          setOperation :exec
+          @options.command = c 
         end
         
         # Print an options summary.
@@ -86,6 +93,11 @@ module Guitr
             res = GitStatus.new.run(repo)
             when :unpushed          
             res = GitUnpushed.new.run(repo)
+            when :exec
+              current_dir = Dir.pwd
+              Dir.chdir repo
+              res = system @options.command
+              Dir.chdir current_dir
           end
         end
         res
@@ -100,7 +112,7 @@ module Guitr
       
       def validate(args)
         start_directory = './'
-        last = args.last
+        last = @operation==:exec ? args[-2] : args.last
         if last.nil? || last.include?('--')
           @log.info 'Current directory will be used to start looking for git working copies.' if @log
         else
