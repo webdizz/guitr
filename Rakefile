@@ -19,11 +19,14 @@ $hoe = Hoe.spec 'guitr' do
   guitr [options] [path_to_repo if not specified current directory will be used]
   
   Options:
-  --status    # default command to invoke, echos result of the 'git status'
-  --pull      # performs 'git pull' against all found repositories
-  --unpushed  # checks whether there are commits need to be pushed
-  --verbose   # echos INFO level logs
-  --trace     # echos DEBUG level logs
+  -s --status     # default command to invoke, echos result of the 'git status'
+  -p --pull       # performs 'git pull' against all found repositories
+  -u --unpushed   # checks whether there are commits need to be pushed
+  -e --exec CMD   # operation to run given command (CMD) against repository directory was added  
+  -v --verbose    # echos INFO level logs
+  -t --trace      # echos DEBUG level logs
+  -V --version    # print guitr version
+  -h --help       # print this help message  
     
   For details go to http://webdizz.name/posts/guitr
   "

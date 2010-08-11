@@ -30,8 +30,9 @@
   
 === 0.0.6 2010-08-11
 
-* 2 major enhancements:
+* 3 major enhancements:
   * --status, --pull and --unpushed operations were made more silent
   * OptionParser was integrated to handle arguments
+  * --exec operation to run given command against repository directory was added
      
   
