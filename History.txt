@@ -27,3 +27,11 @@
 
 * 1 major enhancements:
   * --unpushed operation was enhanced to be informative   
+  
+=== 0.0.6 2010-08-11
+
+* 2 major enhancements:
+  * --status, --pull and --unpushed operations were made more silent
+  * OptionParser was integrated to handle arguments
+     
+  
