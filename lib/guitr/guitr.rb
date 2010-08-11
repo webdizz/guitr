@@ -3,6 +3,8 @@ require 'git'
 require 'find'
 require 'logger'
 require 'guitr/git'
+require 'optparse'
+require 'ostruct'
 
 module Guitr
   
@@ -12,81 +14,127 @@ module Guitr
     
     attr_reader :repo_paths, :operation, :log
     
-    def initialize 
-      @operational_args = ['--status', '--pull', '--unpushed']
-      @acceptable_args = [:verbose, :trace] << @operational_args
-      @acceptable_args = @acceptable_args.flatten
+    def initialize
       @repo_paths = []
       @git_dir = '.git'
-      @usage = '$ guitr --status|--pull path_to_git_repo(s) '
-      @options = {}
     end
     
-    def run(args)
-      validate args
-      res = ''
-      @repo_paths.flatten.uniq.each do |repo|
-        case @operation.to_sym
-          when :pull
-          res = GitPull.new.run(repo, @options)
-          when :status
-          res = GitStatus.new.run(repo, @options)
-          when :unpushed          
-          res = GitUnpushed.new.run(repo, @options)
+    def run
+      @options = OpenStruct.new
+      @options.verbose = false
+      @options.trace = false
+      @options.operation = :status
+      @options.isOperationSet = false;
+      @options.log = nil
+      
+      OptionParser.new do |opts|
+        opts.banner = "Usage: guitr [options] [repository]"
+        opts.separator ""
+        
+        opts.on("-v", "--verbose", "Run verbosely") do |v|
+          @options.verbose = v
+        end
+        
+        opts.on("-t", "--trace", "Run in trace mode") do |t|
+          @options.trace = t
+        end
+        
+        # Run pull
+        opts.on("-p", "--pull", "Run --pull command to update all repositories") do |s|
+          setOperation :pull
+        end
+        
+        # Run unpushed
+        opts.on("-u", "--unpushed", "Run --unpushed command to check commited but not pushed yet changes in repositories") do |s|
+          setOperation :unpushed
+        end
+        
+        # Run status command
+        opts.on("-s", "--status", "Run --status command") do |s|
+          setOperation :status
+        end
+        
+        # Print an options summary.
+        opts.on_tail("-h", "--help", "Show this message") do
+          puts opts
+          exit
+        end
+        
+        # Print the version.
+        opts.on_tail("-V", "--version", "Show version") do
+          puts Guitr::VERSION
+          exit
+        end
+        
+        end.parse!
+        
+        @operation = @options.operation
+        init_logger
+        validate ARGV
+        do_run
+      end
+      
+      private
+      
+      def do_run
+        res = ''
+        @repo_paths.flatten.uniq.each do |repo|
+          case @operation
+            when :pull
+            res = GitPull.new.run(repo)
+            when :status
+            res = GitStatus.new.run(repo)
+            when :unpushed          
+            res = GitUnpushed.new.run(repo)
+          end
+        end
+        res
+      end
+      
+      def setOperation operation
+        if !@options.isOperationSet
+          @options.operation = operation
+          @options.isOperationSet = true
         end
       end
-      res
-    end
-    
-    def validate(args)
-      init_logger(args)
       
-      args.each do |arg|
-        @operation = arg.gsub('--', '') if @operational_args.include?(arg) && @operation.nil?
-      end
-      @operation = :status if @operation.nil?
-      
-      start_directory = './'
-      last = args.last
-      if last.nil? || last.include?('--')
-        @log.info 'Current directory will be used to start looking for git working copies.' if @log
-      else
-        start_directory = args.last	
-      end
-      
-      if !File.exist? start_directory
-        puts "Directory '#{start_directory}' does not exist."
-        exit()
-      end
-      
-      Find.find(start_directory) do |path|
-        if path.include?(@git_dir) && !path.include?("#{@git_dir}/") && File.exist?(path) && File.directory?(path)
-          @repo_paths << File.expand_path(path.gsub(@git_dir, ''))
+      def validate(args)
+        start_directory = './'
+        last = args.last
+        if last.nil? || last.include?('--')
+          @log.info 'Current directory will be used to start looking for git working copies.' if @log
+        else
+          start_directory = args.last	
         end
+        
+        if !File.exist? start_directory
+          puts "Directory '#{start_directory}' does not exist."
+          exit()
+        end
+        
+        Find.find(start_directory) do |path|
+          if path.include?(@git_dir) && !path.include?("#{@git_dir}/") && File.exist?(path) && File.directory?(path)
+            @repo_paths << File.expand_path(path.gsub(@git_dir, ''))
+          end
+        end
+        
+        if @repo_paths.empty?
+          puts "There are no repositories within '#{start_directory}' directory."
+          exit()
+        end
+        
       end
       
-      if @repo_paths.empty?
-        puts "There are no repositories within '#{start_directory}' directory."
-        exit()
+      def init_logger
+        create_logger(Logger::INFO) if @options.verbose
+        create_logger(Logger::DEBUG) if @options.trace
+      end
+      
+      def create_logger level
+        @log = Logger.new STDOUT
+        @log.level = level
+        @options.log = @log
       end
       
     end
-    
-    def init_logger args
-      args.each do |arg|
-        arg = arg.gsub('--', '')
-        create_logger(Logger::INFO) if arg.to_sym == :verbose
-        create_logger(Logger::DEBUG) if arg.to_sym == :trace
-      end
-    end
-    private :init_logger
-    
-    def create_logger level
-      @log = Logger.new STDOUT
-      @log.level = level
-      @options[:log] = @log
-    end
-    private :create_logger
-    
   end
-end
